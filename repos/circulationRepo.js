@@ -3,7 +3,7 @@ const { MongoClient } = require('mongodb');
 
 function circulationRepo() {
    
-  function getData(){
+  function getData(query,limit){
     let client;
     const url = 'mongodb://localhost:27017';
     const dbName = 'circulation1';// if doesn't persent, mongodb will create one for you
@@ -12,8 +12,11 @@ function circulationRepo() {
         client = await MongoClient.connect(url);
         const db = client.db(dbName);
       
-        const items = db.collection('newspaper1').find(); //find will give cursor.. using await items.toArray() we get all data
-       
+        const items = db.collection('newspaper1').find(query); //find will give cursor.. using await items.toArray() we get all data
+          
+        if(limit>0)
+         items.limit(limit);
+          
         resolve(await items.toArray());
         client.close();
       }

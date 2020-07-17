@@ -21,9 +21,17 @@ const dbName = 'circulation1';// if doesn't persent, mongodb will create one for
     assert.equal(data.length, result.insertedCount);  //checking inserted data equals data.length or not
 
     // I missed await here.. await is required since getData() is a promise
-    const getDatas =  await circulationRepo.getData();
+    const newsPappers =  await circulationRepo.getData();
     //console.log(getDatas);
-    assert.equal(data.length, getDatas.length);
+    assert.equal(data.length, newsPappers.length);
+
+    const filteredData =  await circulationRepo.getData({"Newspaper": "Wall Street Journal"});
+    console.log(filteredData);
+    assert.deepEqual(newsPappers[1], filteredData[0]);
+
+    const filteredData1 =  await circulationRepo.getData({},3);
+    console.log(filteredData1);
+    assert.equal(filteredData1.length, 3);
 
   
   }
