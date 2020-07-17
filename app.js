@@ -16,15 +16,28 @@ const dbName = 'circulation1';// if doesn't persent, mongodb will create one for
     client =  await MongoClient.connect(url);
     console.log('Connected correctly')
 
+  
     const result = await circulationRepo.loadData(data); 
-    console.log(result.insertedCount, result.ops);
+    assert.equal(data.length, result.insertedCount);  //checking inserted data equals data.length or not
 
-    const admin = await client.db(dbName).admin();
-   //  console.log(await admin.serverStatus());
-    console.log(await admin.listDatabases());
+    // I missed await here.. await is required since getData() is a promise
+    const getDatas =  await circulationRepo.getData();
+    //console.log(getDatas);
+    assert.equal(data.length, getDatas.length);
+
+  
   }
   catch (err) {
     console.log(err.stack);
+  }
+  finally{
+    const admin = await client.db(dbName).admin();
+    //  console.log(await admin.serverStatus());
+     console.log(await admin.listDatabases());
+     //here we finally dropping the db to see our test case.. not in production code
+     await client.db(dbName).dropDatabase();
+     //when client is not needed.. we are closing it.
+     client.close();
   }
 })();
 
